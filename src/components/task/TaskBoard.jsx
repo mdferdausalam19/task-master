@@ -6,15 +6,7 @@ import AddTaskModal from "./AddTaskModal";
 import NoTaskFound from "./NoTaskFound";
 
 export default function TaskBoard() {
-  const defaultTask = {
-    id: crypto.randomUUID(),
-    title: "Learn React",
-    description: "I want to learn React.",
-    tags: ["react", "web", "js"],
-    priority: "High",
-    isFavorite: true,
-  };
-  const [tasks, setTasks] = useState([defaultTask]);
+  const [tasks, setTasks] = useState([]);
   const [showAddModal, setAddShowModal] = useState(false);
   const [taskToUpdate, setTaskToUpdate] = useState(null);
 
