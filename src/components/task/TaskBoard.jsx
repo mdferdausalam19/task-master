@@ -9,6 +9,7 @@ export default function TaskBoard() {
   const [tasks, setTasks] = useState([]);
   const [showAddModal, setAddShowModal] = useState(false);
   const [taskToUpdate, setTaskToUpdate] = useState(null);
+  const [searchTerm, setSearchTerm] = useState("");
 
   const handleAddEditTask = (newTask, isAdd) => {
     if (isAdd) {
@@ -55,12 +56,14 @@ export default function TaskBoard() {
   };
 
   const handleSearch = (searchTerm) => {
-    console.log(searchTerm);
-    const filtered = tasks.filter((task) =>
-      task.title.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-    setTasks([...filtered]);
+    setSearchTerm(searchTerm);
   };
+
+  const filteredTasks = searchTerm.trim()
+    ? tasks.filter((task) =>
+        task.title.toLowerCase().includes(searchTerm.toLocaleLowerCase())
+      )
+    : tasks;
 
   return (
     <section className="mb-20 mt-20 relative" id="tasks">
@@ -80,9 +83,9 @@ export default function TaskBoard() {
             onAddClick={() => setAddShowModal(true)}
             onDeleteAllClick={handleDeleteAllClick}
           />
-          {tasks.length > 0 ? (
+          {filteredTasks.length > 0 ? (
             <TaskList
-              tasks={tasks}
+              tasks={filteredTasks}
               onEdit={handleEditTask}
               onDelete={handleDeleteTask}
               onFav={handleFavorite}
