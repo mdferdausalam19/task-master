@@ -6,25 +6,24 @@ import AddTaskModal from "./AddTaskModal";
 import NoTaskFound from "./NoTaskFound";
 
 export default function TaskBoard() {
-  const [tasks, setTasks] = useState([]);
+  const [tasks, setTasks] = useState(
+    () => JSON.parse(localStorage.getItem("tasks")) || []
+  );
   const [showAddModal, setAddShowModal] = useState(false);
   const [taskToUpdate, setTaskToUpdate] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
 
-  const handleAddEditTask = (newTask, isAdd) => {
-    if (isAdd) {
-      setTasks([...tasks, newTask]);
-    } else {
-      setTasks(
-        tasks.map((task) => {
-          if (task.id === newTask.id) {
-            return newTask;
-          }
-          return task;
-        })
-      );
-    }
+  const updateLocalStorage = (tasks) => {
+    localStorage.setItem("tasks", JSON.stringify(tasks));
+  };
 
+  const handleAddEditTask = (newTask, isAdd) => {
+    const updatedTasks = isAdd
+      ? [...tasks, newTask]
+      : tasks.map((task) => (task.id === newTask.id ? newTask : task));
+
+    setTasks(updatedTasks);
+    updateLocalStorage(updatedTasks);
     setAddShowModal(false);
   };
 
@@ -39,20 +38,22 @@ export default function TaskBoard() {
   };
 
   const handleDeleteTask = (taskId) => {
-    const tasksAfterDelete = tasks.filter((task) => task.id !== taskId);
-    setTasks(tasksAfterDelete);
+    const updatedTasks = tasks.filter((task) => task.id !== taskId);
+    setTasks(updatedTasks);
+    updateLocalStorage(updatedTasks);
   };
 
   const handleDeleteAllClick = () => {
-    tasks.length = 0;
-    setTasks([...tasks]);
+    setTasks([]);
+    updateLocalStorage([]);
   };
 
   const handleFavorite = (taskId) => {
-    const taskIndex = tasks.findIndex((task) => task.id === taskId);
-    const newTasks = [...tasks];
-    newTasks[taskIndex].isFavorite = !newTasks[taskIndex].isFavorite;
-    setTasks(newTasks);
+    const updatedTasks = tasks.map((task) =>
+      task.id === taskId ? { ...task, isFavorite: !task.isFavorite } : task
+    );
+    setTasks(updatedTasks);
+    updateLocalStorage(updatedTasks);
   };
 
   const handleSearch = (searchTerm) => {
@@ -66,7 +67,7 @@ export default function TaskBoard() {
     : tasks;
 
   return (
-    <section className="mb-20 mt-20 relative" id="tasks">
+    <section className="mb-20 mt-20 relative px-4" id="tasks">
       {showAddModal && (
         <AddTaskModal
           onSave={handleAddEditTask}
